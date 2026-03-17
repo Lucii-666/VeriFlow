@@ -1,0 +1,37 @@
+{
+    "name": "VeriFlow Development Environment",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/python:1": {
+            "version": "3.11"
+        },
+        "ghcr.io/devcontainers/features/github-cli:1": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "github.copilot",
+                "github.copilot-chat",
+                "mshr-h.veriloghdl",
+                "ms-python.python",
+                "leafvmaple.verilog",
+                "wavetrace.wavetrace"
+            ],
+            "settings": {
+                "editor.formatOnSave": true,
+                "verilog.linting.linter": "iverilog",
+                "python.defaultInterpreterPath": "/usr/local/bin/python"
+            }
+        }
+    },
+    "postCreateCommand": "pip install -r requirements.txt && chmod +x scripts/*.sh",
+    "remoteUser": "vscode",
+    "portsAttributes": {
+        "8080": {
+            "label": "VeriFlow Dashboard",
+            "onAutoForward": "openBrowser"
+        }
+    }
+}

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeriFlow Dashboard — Hardware Security CI/CD</title>
+    <meta name="description" content="VeriFlow: Automated CI/CD & Security Pipeline for Digital Design. Monitor hardware verification results and security scans.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+    <div class="bg-glow glow-3"></div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">VeriFlow</span>
+            </div>
+            <div class="nav-links">
+                <a href="#overview" class="nav-link active">Overview</a>
+                <a href="#pipeline" class="nav-link">Pipeline</a>
+                <a href="#tryit" class="nav-link">Try It</a>
+                <a href="#security" class="nav-link">Security</a>
+                <a href="#designs" class="nav-link">Designs</a>
+            </div>
+            <div class="nav-actions">
+                <a href="https://github.com" class="btn btn-ghost" target="_blank">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    GitHub
+                </a>
+                <span class="status-badge" id="globalStatus">
+                    <span class="status-dot"></span>
+                    Loading...
+                </span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="overview">
+        <div class="hero-content">
+            <div class="hero-badge">GitHub DevDays Hackathon 2026</div>
+            <h1 class="hero-title">
+                Hardware Security,
+                <span class="gradient-text">Automated.</span>
+            </h1>
+            <p class="hero-subtitle">
+                Push Verilog code → Auto-run testbenches → Detect hardware trojans → Get security reports. All powered by GitHub Actions.
+            </p>
+            <div class="hero-actions">
+                <a href="#pipeline" class="btn btn-primary">
+                    <span>View Pipeline</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+                <a href="#security" class="btn btn-outline">Explore Scanner</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <div class="terminal-dots">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                    </div>
+                    <span class="terminal-title">veriflow-scanner</span>
+                </div>
+                <div class="terminal-body" id="terminalBody">
+                    <pre id="terminalOutput"></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-card" data-animate>
+                <div class="stat-icon">🔍</div>
+                <div class="stat-value" id="statFiles">0</div>
+                <div class="stat-label">Files Scanned</div>
+            </div>
+            <div class="stat-card" data-animate>
+                <div class="stat-icon">🧪</div>
+                <div class="stat-value" id="statTests">0</div>
+                <div class="stat-label">Tests Passed</div>
+            </div>
+            <div class="stat-card" data-animate>
+                <div class="stat-icon">🛡️</div>
+                <div class="stat-value" id="statVulns">0</div>
+                <div class="stat-label">Trojans Detected</div>
+            </div>
+            <div class="stat-card" data-animate>
+                <div class="stat-icon">⚡</div>
+                <div class="stat-value" id="statRules">7</div>
+                <div class="stat-label">Detection Rules</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pipeline Section -->
+    <section class="section" id="pipeline">
+        <div class="section-header">
+            <h2 class="section-title">CI/CD Pipeline</h2>
+            <p class="section-subtitle">Every push triggers a complete verification flow</p>
+        </div>
+        <div class="pipeline-flow">
+            <div class="pipeline-step completed" data-step="1">
+                <div class="step-icon">📤</div>
+                <div class="step-label">Push Code</div>
+                <div class="step-status">Triggered</div>
+            </div>
+            <div class="pipeline-connector active"></div>
+            <div class="pipeline-step completed" data-step="2">
+                <div class="step-icon">🔍</div>
+                <div class="step-label">Lint Check</div>
+                <div class="step-status">Passed</div>
+            </div>
+            <div class="pipeline-connector active"></div>
+            <div class="pipeline-step completed" data-step="3">
+                <div class="step-icon">🧪</div>
+                <div class="step-label">Simulate</div>
+                <div class="step-status">All Pass</div>
+            </div>
+            <div class="pipeline-connector active"></div>
+            <div class="pipeline-step warning" data-step="4">
+                <div class="step-icon">🛡️</div>
+                <div class="step-label">Security Scan</div>
+                <div class="step-status">Findings</div>
+            </div>
+            <div class="pipeline-connector warning"></div>
+            <div class="pipeline-step completed" data-step="5">
+                <div class="step-icon">📊</div>
+                <div class="step-label">Report</div>
+                <div class="step-status">Published</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- Try It Live — Interactive Scanner Section                  -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <section class="section" id="tryit">
+        <div class="section-header">
+            <h2 class="section-title">🔬 Try It Live</h2>
+            <p class="section-subtitle">Paste any Verilog code and scan it for trojans & vulnerabilities instantly</p>
+        </div>
+
+        <div class="scanner-playground">
+            <!-- Code Editor Panel -->
+            <div class="editor-panel">
+                <div class="editor-header">
+                    <div class="editor-tabs">
+                        <span class="editor-tab active">📝 Verilog Code</span>
+                    </div>
+                    <div class="editor-actions">
+                        <select id="sampleSelect" class="sample-select">
+                            <option value="">Load sample...</option>
+                            <option value="clean_alu">✅ Clean ALU</option>
+                            <option value="trojan_alu">💣 ALU + Time Bomb</option>
+                            <option value="trojan_counter">🕵️ Counter + Kill Switch</option>
+                            <option value="trojan_shiftreg">📡 Shift Reg + Exfil</option>
+                        </select>
+                        <button class="btn btn-primary scan-btn" id="scanBtn" onclick="runLiveScan()">
+                            <span>🛡️ Scan Now</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="editor-body">
+                    <div class="line-numbers" id="lineNumbers">1</div>
+                    <textarea id="codeInput" class="code-editor" spellcheck="false" placeholder="// Paste your Verilog code here...
+// Or select a sample from the dropdown above.
+//
+// Example:
+// module my_design(
+//     input clk,
+//     input rst_n,
+//     output reg [7:0] data
+// );
+//     ...
+// endmodule"></textarea>
+                </div>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="scanner-results-panel" id="scanResultsPanel">
+                <div class="editor-header">
+                    <div class="editor-tabs">
+                        <span class="editor-tab active">🛡️ Scan Results</span>
+                    </div>
+                    <div class="scan-status" id="scanStatus">
+                        <span class="scan-status-dot idle"></span>
+                        Waiting for scan...
+                    </div>
+                </div>
+                <div class="results-body" id="scanResultsBody">
+                    <div class="empty-state">
+                        <div class="empty-icon">🔬</div>
+                        <p>Paste Verilog code on the left and click <strong>"Scan Now"</strong></p>
+                        <p class="empty-hint">The scanner checks for hardware trojans, suspicious FSMs, covert channels, and lint issues</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rule Reference -->
+        <div class="rules-reference">
+            <h3>Detection Rules</h3>
+            <div class="rules-grid">
+                <div class="rule-chip critical">
+                    <span class="rule-id">HT-001</span>
+                    <span>Unused Trigger Logic</span>
+                </div>
+                <div class="rule-chip high">
+                    <span class="rule-id">HT-002</span>
+                    <span>Suspicious State Machines</span>
+                </div>
+                <div class="rule-chip critical">
+                    <span class="rule-id">HT-003</span>
+                    <span>Unauthorized I/O Access</span>
+                </div>
+                <div class="rule-chip high">
+                    <span class="rule-id">HT-004</span>
+                    <span>Time-bomb Patterns</span>
+                </div>
+                <div class="rule-chip medium">
+                    <span class="rule-id">HT-005</span>
+                    <span>Covert Channels</span>
+                </div>
+                <div class="rule-chip high">
+                    <span class="rule-id">HT-006</span>
+                    <span>Rare Input Trigger</span>
+                </div>
+                <div class="rule-chip medium">
+                    <span class="rule-id">LINT-001</span>
+                    <span>Undriven Signals</span>
+                </div>
+                <div class="rule-chip medium">
+                    <span class="rule-id">LINT-003</span>
+                    <span>Latch Inference</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security Results Section -->
+    <section class="section" id="security">
+        <div class="section-header">
+            <h2 class="section-title">Security Analysis</h2>
+            <p class="section-subtitle">Hardware trojan detection across all designs</p>
+        </div>
+
+        <div class="results-tabs">
+            <button class="tab active" data-tab="clean">✅ Clean Designs</button>
+            <button class="tab" data-tab="trojan">⚠️ Trojan Samples</button>
+        </div>
+
+        <div class="results-panel" id="cleanPanel">
+            <div class="results-summary pass">
+                <div class="summary-status">✅ PASS</div>
+                <div class="summary-text">All clean designs passed security analysis — no vulnerabilities detected</div>
+            </div>
+            <div id="cleanResults" class="results-list"></div>
+        </div>
+
+        <div class="results-panel hidden" id="trojanPanel">
+            <div class="results-summary fail">
+                <div class="summary-status">❌ FAIL</div>
+                <div class="summary-text">Intentional trojans detected — demonstrating scanner effectiveness</div>
+            </div>
+            <div id="trojanResults" class="results-list"></div>
+        </div>
+    </section>
+
+    <!-- Designs Section -->
+    <section class="section" id="designs">
+        <div class="section-header">
+            <h2 class="section-title">Design Library</h2>
+            <p class="section-subtitle">Sample RTL designs included in VeriFlow</p>
+        </div>
+        <div class="designs-grid">
+            <div class="design-card">
+                <div class="design-icon">🔢</div>
+                <h3>ALU</h3>
+                <p>8-bit Arithmetic Logic Unit with 10 operations: ADD, SUB, AND, OR, XOR, NOT, SHL, SHR, MUL, CMP</p>
+                <div class="design-meta">
+                    <span class="tag">Combinational</span>
+                    <span class="tag">Parameterized</span>
+                </div>
+                <div class="design-status pass">✅ Clean</div>
+            </div>
+            <div class="design-card">
+                <div class="design-icon">🔄</div>
+                <h3>Counter</h3>
+                <p>Configurable up/down counter with enable, parallel load, and boundary detection flags</p>
+                <div class="design-meta">
+                    <span class="tag">Sequential</span>
+                    <span class="tag">Up/Down</span>
+                </div>
+                <div class="design-status pass">✅ Clean</div>
+            </div>
+            <div class="design-card">
+                <div class="design-icon">➡️</div>
+                <h3>Shift Register</h3>
+                <p>Bidirectional shift register with serial/parallel I/O, parallel load, and enable</p>
+                <div class="design-meta">
+                    <span class="tag">Sequential</span>
+                    <span class="tag">SIPO/PISO</span>
+                </div>
+                <div class="design-status pass">✅ Clean</div>
+            </div>
+        </div>
+
+        <div class="section-header" style="margin-top: 3rem;">
+            <h3 class="section-title" style="font-size: 1.5rem;">⚠️ Trojan Samples (For Demo)</h3>
+        </div>
+        <div class="designs-grid">
+            <div class="design-card trojan">
+                <div class="design-icon">💣</div>
+                <h3>ALU + Time Bomb</h3>
+                <p>Hidden counter triggered by rare input pattern. Leaks internal data via carry_out (covert channel).</p>
+                <div class="design-meta">
+                    <span class="tag danger">HT-001</span>
+                    <span class="tag danger">HT-004</span>
+                    <span class="tag danger">HT-005</span>
+                </div>
+                <div class="design-status fail">❌ Trojaned</div>
+            </div>
+            <div class="design-card trojan">
+                <div class="design-icon">🕵️</div>
+                <h3>Counter + Kill Switch</h3>
+                <p>Hidden FSM activated by magic load sequence (0xAA→0x55→0xFF). Silently corrupts count output.</p>
+                <div class="design-meta">
+                    <span class="tag danger">HT-002</span>
+                    <span class="tag danger">HT-003</span>
+                </div>
+                <div class="design-status fail">❌ Trojaned</div>
+            </div>
+            <div class="design-card trojan">
+                <div class="design-icon">📡</div>
+                <h3>Shift Register + Exfil</h3>
+                <p>Covert exfiltration channel via serial_out. XOR-reduces register data and leaks through output.</p>
+                <div class="design-meta">
+                    <span class="tag danger">HT-001</span>
+                    <span class="tag danger">HT-005</span>
+                </div>
+                <div class="design-status fail">❌ Trojaned</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GitHub Ecosystem Section -->
+    <section class="section ecosystem" id="ecosystem">
+        <div class="section-header">
+            <h2 class="section-title">GitHub Ecosystem</h2>
+            <p class="section-subtitle">Deep integration with GitHub's developer platform</p>
+        </div>
+        <div class="ecosystem-grid">
+            <div class="eco-card">
+                <div class="eco-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                </div>
+                <h3>GitHub Actions</h3>
+                <p>Complete CI/CD pipeline: lint → simulate → security scan → deploy. Triggered on every push.</p>
+            </div>
+            <div class="eco-card">
+                <div class="eco-icon">🤖</div>
+                <h3>GitHub Copilot</h3>
+                <p>Custom instructions for hardware design context. Auto-generates testbench boilerplate with clock, reset, and assertions.</p>
+            </div>
+            <div class="eco-card">
+                <div class="eco-icon">☁️</div>
+                <h3>GitHub Codespaces</h3>
+                <p>One-click dev environment with Icarus Verilog, GTKWave, Yosys, and Python pre-installed.</p>
+            </div>
+            <div class="eco-card">
+                <div class="eco-icon">📄</div>
+                <h3>GitHub Pages</h3>
+                <p>This dashboard is automatically deployed and updated with every pipeline run.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>⚡ <strong>VeriFlow</strong> — Built for GitHub DevDays Hackathon 2026</p>
+            <p class="footer-sub">Automated CI/CD & Security for Digital Design</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

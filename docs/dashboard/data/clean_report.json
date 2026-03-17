@@ -1,0 +1,213 @@
+{
+  "veriflow_version": "1.0.0",
+  "scan_date": "2026-03-17T16:06:39.042870",
+  "summary": {
+    "total_files": 6,
+    "total_findings": 14,
+    "critical": 0,
+    "high": 0,
+    "medium": 14,
+    "low": 0,
+    "clean_files": 3,
+    "overall_status": "PASS"
+  },
+  "files": [
+    {
+      "path": "designs/alu/tb_alu.v",
+      "lines_scanned": 155,
+      "modules": [
+        "tb_alu"
+      ],
+      "status": "WARNING",
+      "findings": [
+        {
+          "rule_id": "LINT-001",
+          "rule_name": "Undriven Signal",
+          "severity": "medium",
+          "file_path": "designs/alu/tb_alu.v",
+          "line_number": 19,
+          "line_content": "reg  [3:0]           opcode;",
+          "description": "Signal 'opcode' is declared but never assigned.",
+          "recommendation": "Remove unused signal 'opcode' or add a driver."
+        },
+        {
+          "rule_id": "LINT-001",
+          "rule_name": "Undriven Signal",
+          "severity": "medium",
+          "file_path": "designs/alu/tb_alu.v",
+          "line_number": 16,
+          "line_content": "reg                  rst_n;",
+          "description": "Signal 'rst_n' is declared but never assigned.",
+          "recommendation": "Remove unused signal 'rst_n' or add a driver."
+        },
+        {
+          "rule_id": "LINT-001",
+          "rule_name": "Undriven Signal",
+          "severity": "medium",
+          "file_path": "designs/alu/tb_alu.v",
+          "line_number": 15,
+          "line_content": "reg                  clk;",
+          "description": "Signal 'clk' is declared but never assigned.",
+          "recommendation": "Remove unused signal 'clk' or add a driver."
+        }
+      ]
+    },
+    {
+      "path": "designs/alu/alu.v",
+      "lines_scanned": 91,
+      "modules": [
+        "alu"
+      ],
+      "status": "PASS",
+      "findings": []
+    },
+    {
+      "path": "designs/shift_register/tb_shift_register.v",
+      "lines_scanned": 145,
+      "modules": [
+        "tb_shift_register"
+      ],
+      "status": "WARNING",
+      "findings": [
+        {
+          "rule_id": "LINT-001",
+          "rule_name": "Undriven Signal",
+          "severity": "medium",
+          "file_path": "designs/shift_register/tb_shift_register.v",
+          "line_number": 16,
+          "line_content": "reg                  serial_in;",
+          "description": "Signal 'serial_in' is declared but never assigned.",
+          "recommendation": "Remove unused signal 'serial_in' or add a driver."
+        },
+        {
+          "rule_id": "LINT-001",
+          "rule_name": "Undriven Signal",
+          "severity": "medium",
+          "file_path": "designs/shift_register/tb_shift_register.v",
+          "line_number": 14,
+          "line_content": "reg                  load;",
+          "description": "Signal 'load' is declared but never assigned.",
+          "recommendation": "Remove unused signal 'load' or add a driver."
+        },
+        {
+          "rule_id": "LINT-001",
+          "rule_name": "Undriven Signal",
+          "severity": "medium",
+          "file_path": "designs/shift_register/tb_shift_register.v",
+          "line_number": 13,
+          "line_content": "reg                  enable;",
+          "description": "Signal 'enable' is declared but never assigned.",
+          "recommendation": "Remove unused signal 'enable' or add a driver."
+        },
+        {
+          "rule_id": "LINT-001",
+          "rule_name": "Undriven Signal",
+          "severity": "medium",
+          "file_path": "designs/shift_register/tb_shift_register.v",
+          "line_number": 15,
+          "line_content": "reg                  direction;",
+          "description": "Signal 'direction' is declared but never assigned.",
+          "recommendation": "Remove unused signal 'direction' or add a driver."
+        },
+        {
+          "rule_id": "LINT-001",
+          "rule_name": "Undriven Signal",
+          "severity": "medium",
+          "file_path": "designs/shift_register/tb_shift_register.v",
+          "line_number": 12,
+          "line_content": "reg                  rst_n;",
+          "description": "Signal 'rst_n' is declared but never assigned.",
+          "recommendation": "Remove unused signal 'rst_n' or add a driver."
+        },
+        {
+          "rule_id": "LINT-001",
+          "rule_name": "Undriven Signal",
+          "severity": "medium",
+          "file_path": "designs/shift_register/tb_shift_register.v",
+          "line_number": 11,
+          "line_content": "reg                  clk;",
+          "description": "Signal 'clk' is declared but never assigned.",
+          "recommendation": "Remove unused signal 'clk' or add a driver."
+        }
+      ]
+    },
+    {
+      "path": "designs/shift_register/shift_register.v",
+      "lines_scanned": 42,
+      "modules": [
+        "shift_register"
+      ],
+      "status": "PASS",
+      "findings": []
+    },
+    {
+      "path": "designs/counter/counter.v",
+      "lines_scanned": 37,
+      "modules": [
+        "counter"
+      ],
+      "status": "PASS",
+      "findings": []
+    },
+    {
+      "path": "designs/counter/tb_counter.v",
+      "lines_scanned": 149,
+      "modules": [
+        "tb_counter"
+      ],
+      "status": "WARNING",
+      "findings": [
+        {
+          "rule_id": "LINT-001",
+          "rule_name": "Undriven Signal",
+          "severity": "medium",
+          "file_path": "designs/counter/tb_counter.v",
+          "line_number": 15,
+          "line_content": "reg                  load;",
+          "description": "Signal 'load' is declared but never assigned.",
+          "recommendation": "Remove unused signal 'load' or add a driver."
+        },
+        {
+          "rule_id": "LINT-001",
+          "rule_name": "Undriven Signal",
+          "severity": "medium",
+          "file_path": "designs/counter/tb_counter.v",
+          "line_number": 13,
+          "line_content": "reg                  enable;",
+          "description": "Signal 'enable' is declared but never assigned.",
+          "recommendation": "Remove unused signal 'enable' or add a driver."
+        },
+        {
+          "rule_id": "LINT-001",
+          "rule_name": "Undriven Signal",
+          "severity": "medium",
+          "file_path": "designs/counter/tb_counter.v",
+          "line_number": 14,
+          "line_content": "reg                  up_down;",
+          "description": "Signal 'up_down' is declared but never assigned.",
+          "recommendation": "Remove unused signal 'up_down' or add a driver."
+        },
+        {
+          "rule_id": "LINT-001",
+          "rule_name": "Undriven Signal",
+          "severity": "medium",
+          "file_path": "designs/counter/tb_counter.v",
+          "line_number": 12,
+          "line_content": "reg                  rst_n;",
+          "description": "Signal 'rst_n' is declared but never assigned.",
+          "recommendation": "Remove unused signal 'rst_n' or add a driver."
+        },
+        {
+          "rule_id": "LINT-001",
+          "rule_name": "Undriven Signal",
+          "severity": "medium",
+          "file_path": "designs/counter/tb_counter.v",
+          "line_number": 11,
+          "line_content": "reg                  clk;",
+          "description": "Signal 'clk' is declared but never assigned.",
+          "recommendation": "Remove unused signal 'clk' or add a driver."
+        }
+      ]
+    }
+  ]
+}

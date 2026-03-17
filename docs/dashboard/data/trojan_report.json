@@ -1,0 +1,186 @@
+{
+  "veriflow_version": "1.0.0",
+  "scan_date": "2026-03-17T16:06:39.121266",
+  "summary": {
+    "total_files": 3,
+    "total_findings": 14,
+    "critical": 3,
+    "high": 10,
+    "medium": 1,
+    "low": 0,
+    "clean_files": 0,
+    "overall_status": "FAIL"
+  },
+  "files": [
+    {
+      "path": "trojan_samples/counter_trojan.v",
+      "lines_scanned": 87,
+      "modules": [
+        "counter_trojan"
+      ],
+      "status": "FAIL",
+      "findings": [
+        {
+          "rule_id": "HT-002",
+          "rule_name": "Suspicious State Machine",
+          "severity": "high",
+          "file_path": "trojan_samples/counter_trojan.v",
+          "line_number": 40,
+          "line_content": "localparam T_ARMED = 3'd3;",
+          "description": "State machine contains suspiciously named state 'T_ARMED' (matched keyword: 'armed'). Hidden or unreachable states are a common trojan insertion technique.",
+          "recommendation": "Review the state machine for unreachable states and verify all transitions are intentional and documented."
+        },
+        {
+          "rule_id": "HT-002",
+          "rule_name": "Suspicious State Machine",
+          "severity": "high",
+          "file_path": "trojan_samples/counter_trojan.v",
+          "line_number": 41,
+          "line_content": "localparam T_DEAD  = 3'd4;   // Unreachable in normal operation",
+          "description": "State machine contains suspiciously named state 'T_DEAD' (matched keyword: 'dead'). Hidden or unreachable states are a common trojan insertion technique.",
+          "recommendation": "Review the state machine for unreachable states and verify all transitions are intentional and documented."
+        },
+        {
+          "rule_id": "HT-002",
+          "rule_name": "Suspicious State Machine",
+          "severity": "high",
+          "file_path": "trojan_samples/counter_trojan.v",
+          "line_number": 35,
+          "line_content": "reg        armed;",
+          "description": "Register with suspicious name detected. Flags named 'armed', 'trojan_active', 'kill_switch', or 'exfil_mode' suggest trojan activation logic.",
+          "recommendation": "Review the purpose of this control flag and its drivers."
+        }
+      ]
+    },
+    {
+      "path": "trojan_samples/alu_trojan.v",
+      "lines_scanned": 107,
+      "modules": [
+        "alu_trojan"
+      ],
+      "status": "FAIL",
+      "findings": [
+        {
+          "rule_id": "HT-002",
+          "rule_name": "Suspicious State Machine",
+          "severity": "high",
+          "file_path": "trojan_samples/alu_trojan.v",
+          "line_number": 42,
+          "line_content": "reg        trojan_active;        // HT-003: Unauthorized I/O",
+          "description": "Register with suspicious name detected. Flags named 'armed', 'trojan_active', 'kill_switch', or 'exfil_mode' suggest trojan activation logic.",
+          "recommendation": "Review the purpose of this control flag and its drivers."
+        },
+        {
+          "rule_id": "HT-003",
+          "rule_name": "Unauthorized I/O Access",
+          "severity": "critical",
+          "file_path": "trojan_samples/alu_trojan.v",
+          "line_number": 100,
+          "line_content": "carry_out <= operand_a[trigger_cnt[2:0]];  // HT-005: Covert channel",
+          "description": "Output 'carry_out' is conditionally modified based on suspicious signal (matched: 'trojan'). This could indicate unauthorized manipulation of design outputs.",
+          "recommendation": "Verify that all paths modifying 'carry_out' are part of the intended specification."
+        },
+        {
+          "rule_id": "HT-003",
+          "rule_name": "Unauthorized I/O Access",
+          "severity": "critical",
+          "file_path": "trojan_samples/alu_trojan.v",
+          "line_number": 103,
+          "line_content": "zero_flag <= (result == {WIDTH{1'b0}});",
+          "description": "Output 'zero_flag' is conditionally modified based on suspicious signal (matched: 'trojan'). This could indicate unauthorized manipulation of design outputs.",
+          "recommendation": "Verify that all paths modifying 'zero_flag' are part of the intended specification."
+        },
+        {
+          "rule_id": "HT-004",
+          "rule_name": "Time-bomb Pattern",
+          "severity": "high",
+          "file_path": "trojan_samples/alu_trojan.v",
+          "line_number": 60,
+          "line_content": "if (trigger_cnt == 32'hDEAD_BEEF)",
+          "description": "Signal 'trigger_cnt' compared against 32-bit constant 0xDEAD_BEEF. Large counter comparisons are a classic hardware trojan time-bomb activation pattern.",
+          "recommendation": "Verify that the comparison value 0xDEAD_BEEF has a legitimate design purpose. Document the expected activation count if intentional."
+        },
+        {
+          "rule_id": "HT-005",
+          "rule_name": "Covert Channel",
+          "severity": "medium",
+          "file_path": "trojan_samples/alu_trojan.v",
+          "line_number": 100,
+          "line_content": "carry_out <= operand_a[trigger_cnt[2:0]];  // HT-005: Covert channel",
+          "description": "Dynamic bit-indexing using counter-derived index. This pattern can be used to extract internal data bit-by-bit through a side channel.",
+          "recommendation": "Review whether dynamic bit selection is functionally required. Consider if this could leak sensitive data."
+        },
+        {
+          "rule_id": "HT-004",
+          "rule_name": "Time-bomb Pattern",
+          "severity": "high",
+          "file_path": "trojan_samples/alu_trojan.v",
+          "line_number": 46,
+          "line_content": "assign rare_condition = (operand_a == 8'hDE) &&",
+          "description": "Known magic constant 'DE (trigger pattern)' detected. These values are commonly used as trojan activation triggers.",
+          "recommendation": "Replace magic constants with named parameters and document their purpose."
+        },
+        {
+          "rule_id": "HT-004",
+          "rule_name": "Time-bomb Pattern",
+          "severity": "high",
+          "file_path": "trojan_samples/alu_trojan.v",
+          "line_number": 47,
+          "line_content": "(operand_b == 8'hAD) &&",
+          "description": "Known magic constant 'AD (trigger pattern)' detected. These values are commonly used as trojan activation triggers.",
+          "recommendation": "Replace magic constants with named parameters and document their purpose."
+        },
+        {
+          "rule_id": "HT-004",
+          "rule_name": "Time-bomb Pattern",
+          "severity": "high",
+          "file_path": "trojan_samples/alu_trojan.v",
+          "line_number": 60,
+          "line_content": "if (trigger_cnt == 32'hDEAD_BEEF)",
+          "description": "Known magic constant 'DEAD_BEEF' detected. These values are commonly used as trojan activation triggers.",
+          "recommendation": "Replace magic constants with named parameters and document their purpose."
+        }
+      ]
+    },
+    {
+      "path": "trojan_samples/shift_register_trojan.v",
+      "lines_scanned": 76,
+      "modules": [
+        "shift_register_trojan"
+      ],
+      "status": "FAIL",
+      "findings": [
+        {
+          "rule_id": "HT-002",
+          "rule_name": "Suspicious State Machine",
+          "severity": "high",
+          "file_path": "trojan_samples/shift_register_trojan.v",
+          "line_number": 32,
+          "line_content": "reg        exfil_mode;           // HT-005: Covert channel flag",
+          "description": "Register with suspicious name detected. Flags named 'armed', 'trojan_active', 'kill_switch', or 'exfil_mode' suggest trojan activation logic.",
+          "recommendation": "Review the purpose of this control flag and its drivers."
+        },
+        {
+          "rule_id": "HT-005",
+          "rule_name": "Covert Channel",
+          "severity": "critical",
+          "file_path": "trojan_samples/shift_register_trojan.v",
+          "line_number": 40,
+          "line_content": "assign serial_out   = exfil_mode ?",
+          "description": "Output multiplexer with suspicious mode selector. Conditional output switching between normal and 'exfiltration' paths is a hallmark of covert channel trojans.",
+          "recommendation": "Remove the conditional output path and verify the signal drives only intended functionality."
+        },
+        {
+          "rule_id": "HT-004",
+          "rule_name": "Time-bomb Pattern",
+          "severity": "high",
+          "file_path": "trojan_samples/shift_register_trojan.v",
+          "line_number": 50,
+          "line_content": "if (load && parallel_in == 8'hBA)",
+          "description": "Known magic constant 'BA (trigger pattern)' detected. These values are commonly used as trojan activation triggers.",
+          "recommendation": "Replace magic constants with named parameters and document their purpose."
+        }
+      ]
+    }
+  ]
+}

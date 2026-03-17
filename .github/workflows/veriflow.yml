@@ -1,0 +1,244 @@
+name: "⚡ VeriFlow CI/CD Pipeline"
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'designs/**'
+      - 'trojan_samples/**'
+      - 'scanner/**'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'designs/**'
+      - 'trojan_samples/**'
+      - 'scanner/**'
+
+env:
+  REPORTS_DIR: reports
+
+jobs:
+  # ════════════════════════════════════════════════════════════════════
+  # Job 1: Lint Verilog Files
+  # ════════════════════════════════════════════════════════════════════
+  lint:
+    name: "🔍 Lint Check"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Icarus Verilog
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y iverilog
+
+      - name: Lint — Syntax check all designs
+        run: |
+          echo "═══════════════════════════════════════════"
+          echo "  ⚡ VeriFlow Lint Check"
+          echo "═══════════════════════════════════════════"
+          ERRORS=0
+          for vfile in $(find designs/ -name "*.v" ! -name "tb_*"); do
+            echo "  Checking: $vfile"
+            if iverilog -t null -Wall "$vfile" 2>&1; then
+              echo "    ✅ Pass"
+            else
+              echo "    ❌ Fail"
+              ERRORS=$((ERRORS + 1))
+            fi
+          done
+          echo ""
+          if [ $ERRORS -gt 0 ]; then
+            echo "❌ Lint failed with $ERRORS error(s)"
+            exit 1
+          else
+            echo "✅ All files passed lint check"
+          fi
+
+  # ════════════════════════════════════════════════════════════════════
+  # Job 2: Simulate Testbenches
+  # ════════════════════════════════════════════════════════════════════
+  simulate:
+    name: "🧪 Simulate & Test"
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Icarus Verilog
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y iverilog
+
+      - name: Run simulations
+        run: |
+          echo "═══════════════════════════════════════════"
+          echo "  ⚡ VeriFlow Simulation Runner"
+          echo "═══════════════════════════════════════════"
+          mkdir -p ${{ env.REPORTS_DIR }}
+
+          PASS=0
+          FAIL=0
+          RESULTS=""
+
+          for design_dir in designs/*/; do
+            DESIGN_NAME=$(basename "$design_dir")
+            echo ""
+            echo "━━━ Simulating: $DESIGN_NAME ━━━"
+
+            # Find the design and testbench files
+            DESIGN_FILE=$(find "$design_dir" -name "*.v" ! -name "tb_*" | head -1)
+            TB_FILE=$(find "$design_dir" -name "tb_*.v" | head -1)
+
+            if [ -z "$DESIGN_FILE" ] || [ -z "$TB_FILE" ]; then
+              echo "  ⚠️  Skipping — missing design or testbench"
+              continue
+            fi
+
+            echo "  Design:    $DESIGN_FILE"
+            echo "  Testbench: $TB_FILE"
+
+            # Compile
+            if iverilog -o "${design_dir}sim.vvp" "$TB_FILE" "$DESIGN_FILE" 2>&1; then
+              echo "  ✅ Compilation successful"
+
+              # Simulate
+              SIM_OUTPUT=$(vvp "${design_dir}sim.vvp" 2>&1)
+              echo "$SIM_OUTPUT"
+
+              # Save simulation log
+              echo "$SIM_OUTPUT" > "${{ env.REPORTS_DIR }}/${DESIGN_NAME}_sim.log"
+
+              # Check result
+              if echo "$SIM_OUTPUT" | grep -q "SIMULATION RESULT: PASS"; then
+                echo "  ✅ $DESIGN_NAME: All tests passed"
+                PASS=$((PASS + 1))
+                RESULTS="${RESULTS}✅ ${DESIGN_NAME}: PASS\n"
+              else
+                echo "  ❌ $DESIGN_NAME: Tests failed"
+                FAIL=$((FAIL + 1))
+                RESULTS="${RESULTS}❌ ${DESIGN_NAME}: FAIL\n"
+              fi
+            else
+              echo "  ❌ Compilation failed"
+              FAIL=$((FAIL + 1))
+              RESULTS="${RESULTS}❌ ${DESIGN_NAME}: COMPILE ERROR\n"
+            fi
+          done
+
+          echo ""
+          echo "═══════════════════════════════════════════"
+          echo "  SIMULATION SUMMARY"
+          echo "═══════════════════════════════════════════"
+          echo -e "$RESULTS"
+          echo "  Passed: $PASS | Failed: $FAIL"
+
+          if [ $FAIL -gt 0 ]; then
+            exit 1
+          fi
+
+      - name: Upload simulation logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: simulation-logs
+          path: |
+            ${{ env.REPORTS_DIR }}/*_sim.log
+            designs/**/*.vcd
+
+  # ════════════════════════════════════════════════════════════════════
+  # Job 3: Security Scan
+  # ════════════════════════════════════════════════════════════════════
+  security-scan:
+    name: "🛡️ Security Scan"
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install scanner dependencies
+        run: pip install -r requirements.txt
+
+      - name: Scan clean designs
+        run: |
+          echo "═══════════════════════════════════════════"
+          echo "  ⚡ VeriFlow Security Scanner — Clean Designs"
+          echo "═══════════════════════════════════════════"
+          python -m scanner designs/ --format all --output reports/clean_designs
+
+      - name: Scan trojan samples
+        if: always()
+        run: |
+          echo "═══════════════════════════════════════════"
+          echo "  ⚡ VeriFlow Security Scanner — Trojan Samples"
+          echo "═══════════════════════════════════════════"
+          python -m scanner trojan_samples/ --format all --output reports/trojan_samples || true
+
+      - name: GitHub Actions annotations
+        if: always()
+        run: |
+          python -m scanner designs/ --format github || true
+          python -m scanner trojan_samples/ --format github || true
+
+      - name: Upload security reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-reports
+          path: |
+            reports/*.json
+            reports/*.html
+
+  # ════════════════════════════════════════════════════════════════════
+  # Job 4: Dashboard Deploy
+  # ════════════════════════════════════════════════════════════════════
+  deploy-dashboard:
+    name: "📊 Deploy Dashboard"
+    runs-on: ubuntu-latest
+    needs: [simulate, security-scan]
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate fresh reports
+        run: |
+          python -m scanner designs/ --format json --output docs/dashboard/data/clean_report || true
+          python -m scanner trojan_samples/ --format json --output docs/dashboard/data/trojan_report || true
+          python -m scanner designs/ --format html --output docs/dashboard/reports/clean_report || true
+          python -m scanner trojan_samples/ --format html --output docs/dashboard/reports/trojan_report || true
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/dashboard
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

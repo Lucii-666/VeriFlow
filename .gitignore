@@ -1,0 +1,26 @@
+# VeriFlow .gitignore
+
+# Compiled simulation
+*.vvp
+*.vcd
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# Reports (generated)
+reports/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

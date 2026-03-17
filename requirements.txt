@@ -1,0 +1,10 @@
+# VeriFlow - Python Dependencies
+# Security Scanner
+pyverilog>=1.3.0
+jinja2>=3.1.0
+
+# Report Generation
+rich>=13.0.0
+
+# Testing
+pytest>=7.0.0
