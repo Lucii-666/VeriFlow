@@ -133,10 +133,10 @@ module tb_counter;
 
         if (fail_count > 0) begin
             $display("SIMULATION RESULT: FAIL");
-            $finish(1);
+            $finish;
         end else begin
             $display("SIMULATION RESULT: PASS");
-            $finish(0);
+            $finish;
         end
     end
 

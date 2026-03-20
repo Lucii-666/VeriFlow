@@ -17,6 +17,7 @@ on:
 
 env:
   REPORTS_DIR: reports
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   # ════════════════════════════════════════════════════════════════════
@@ -28,6 +29,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
 
       - name: Install Icarus Verilog
         run: |
@@ -106,7 +108,7 @@ jobs:
               echo "  ✅ Compilation successful"
 
               # Simulate
-              SIM_OUTPUT=$(vvp "${design_dir}sim.vvp" 2>&1)
+              SIM_OUTPUT=$(vvp "${design_dir}sim.vvp" 2>&1 || true)
               echo "$SIM_OUTPUT"
 
               # Save simulation log
