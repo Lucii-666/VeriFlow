@@ -562,6 +562,7 @@ class VerilogAnalyzer:
         declared = set(re.findall(r"reg\s+(?:\[\d+:\d+\]\s+)?(\w+)", content))
         assigned = set(re.findall(r"(\w+)\s*<=", content))
         assigned.update(re.findall(r"assign\s+(\w+)", content))
+        assigned.update(re.findall(r"\b(\w+)\s*=\s*[^=]", content)) # Blocking assignments
 
         for sig in declared - assigned:
             for i, line in enumerate(lines):
